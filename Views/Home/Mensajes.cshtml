@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "El Muro";
+}
+@model Mensaje
+
+@{
+    var existeUsuarioError = ViewData.ModelState["MensajeTexto"]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+
+@if (!string.IsNullOrEmpty(existeUsuarioError))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @existeUsuarioError
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="center-content">
+    <h4>Postea un Mensaje: </h4>
+    <div class='posteo'>
+        <form asp-controller="Home" asp-action="PostearMensaje" method="post">
+            <div class="form-group">
+                <textarea asp-for="MensajeTexto" placeholder="ALGÚN MENSAJITO?" class="inputmensaje form-control"
+                    required></textarea>
+                <span asp-validation-for="MensajeTexto" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn1 btn btn-primary">Postear</button><br><br> </form>
+    </div>
+
+    <div class='mensajes'>
+        @if (ViewBag.AllMensajes != null)
+        {
+            @foreach (var m in ViewBag.AllMensajes)
+            {
+                <p class="msgHead">@m.Usuario.Nombre @m.Usuario.Apellido - @m.Fecha_Creacion.ToString("dd-MM-yyyy")</p>
+                <p class="msgBody">@m.MensajeTexto</p>
+                @foreach (var c in m.ListaComentarios)
+                {
+                    <p class="cmntHead">@c.Mensaje.Nombre @c.Mensaje.Apellido - @c.Fecha_Creacion</p>
+                    <p class="cmntBody">@c.ComentarioTexto</p>
+                }
+                <form action="/postear/@m.MensajeId" method="post">
+                    <h4>Postear Comentario</h4>
+                    <textarea class="comentario"></textarea>
+                    <input class="btn btn1 btn-primary" type="submit" value="Postear Comentario">
+                </form><br>
+            }
+        }
+        else
+        {
+            <h3>
+                No hay mensajes para mostrar
+            </h3>
+        }
+    </div>
+</div>
